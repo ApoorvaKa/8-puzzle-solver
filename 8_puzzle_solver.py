@@ -2,6 +2,7 @@ import heapq
 import copy
 
 MOVES = {"L" : (0,-1), "R" : (0,1), "U" : (1,0), "D" : (-1,0)}
+NILLSON_ORDER = [(0,0), (0,1), (0,2), (1,2), (2,2), (2,1), (2,0),(1,1)]
 VALID = [0, 1, 2]
 COLS = 3
 
@@ -12,6 +13,7 @@ class Node:
         self.last_move = last_move
         if goal_node != None:
             self.fn_value = path_cost + self.manhattan_distance(goal_node)
+            #self.nillson_score(goal_node)
     
     def __str__(self):
         printer = str(self.last_move) +" " + str(self.fn_value) + "\n"
@@ -56,20 +58,25 @@ class Node:
         return manhattan_distance
     
     def nillson_sequence_score(self, goal):
-        pass
+        nillson_score = 0
+        for coord in NILLSON_ORDER:
+            print(self.puzzle[coord[0]][coord[1]])
+        
+        # Check the center tile
+        if self.arrangement[1][1] != goal.arrangement[1][1]:
+            nillson_score += 1
 
 class Puzzle:
-    def __init__(self, filename):
+    def __init__(self, input_filename, output_filename):
         self.current = None
         self.goal = None
         self.reached = []
         self.frontier = []
-        self.get_input(filename)
+        self.num_nodes = 1 # this is the root node
+        self.get_input(input_filename, output_filename)
 
     def try_moves(self):
         # Try all moves L, R, U, D
-        # best_heuristic = self.path_cost
-
         row, col = self.current.make_dict()["0"]
         for move in MOVES:
             new_node = None
@@ -98,35 +105,45 @@ class Puzzle:
                 if seen == False:
                     heapq.heappush(self.frontier, new_node)
                     self.reached.append(new_node)
+                    self.num_nodes += 1
     
-    def select_next_move(self):
+    def select_next_move(self, output_filename):
+        output_file = open(output_filename, 'a')
+        moves = ""
+        f_vals = ""
         self.try_moves() # expand the first node
         not_solved = True
-        # counter = 0
         while not_solved:
             if len(self.frontier) == 0:
                 break
             self.current = heapq.heappop(self.frontier)
+            moves += self.current.last_move + " "
+            f_vals += str(self.current.fn_value) + " "
             print(self.current)
             if self.current.puzzle == self.goal.puzzle:
                 not_solved = False
                 print("We solved the puzzle!")
+                output_file.write(str(self.current.path_cost) + "\n")
+                output_file.write(str(self.num_nodes) + "\n")
+                output_file.write(moves + "\n")
+                output_file.write(f_vals)
             else:
                 self.try_moves()
                 self.frontier.sort()
 
-    def get_input(self, filename):
+    def get_input(self, input_filename, output_filename):
         # This function takes in the file name and populates goal and current states
         try:
-            file = open(filename, 'r')
+            input_file = open(input_filename, 'r')
         except FileNotFoundError:
-            print("{} not found".format(filename))
+            print("{} not found".format(input_filename))
             return
-        
+        output_file = open(output_filename, 'w')
         is_goal = False
         goal = []
         start = []
-        for line in file:
+        for line in input_file:
+            output_file.write(line)
             if line == "\n":
                 is_goal = True
             else:
@@ -138,10 +155,13 @@ class Puzzle:
                     start.append(line)  
         self.goal = Node(goal)
         self.current = Node(start, None, self.goal, 0)
+        output_file.write("\n\n")
+        input_file.close()
+        output_file.close()
 
 def main():
-    puzz = Puzzle("input_example_3.txt")
-    puzz.select_next_move()
+    puzz = Puzzle("input_example.txt", "output_example.txt")
+    puzz.select_next_move("output_example.txt")
 
 if __name__ == "__main__":
     main()
