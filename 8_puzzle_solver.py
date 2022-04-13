@@ -1,7 +1,12 @@
+"""
+Apoorva Kaushik
+8 Puzzle Solver
+CS 4613 Project 1
+"""
 import heapq
 import copy
 
-MOVES = {"L" : (0,-1), "R" : (0,1), "U" : (1,0), "D" : (-1,0)}
+MOVES = ["L", "R", "U", "D"]
 NILLSON_ORDER = [(0,0), (0,1), (0,2), (1,2), (2,2), (2,1), (2,0),(1,0), (0,0)]
 VALID = [0, 1, 2]
 COLS = 3
@@ -122,19 +127,31 @@ class Puzzle:
         self.goal = None
         self.reached = []
         self.frontier = []
-        self.num_nodes = 0 # this is the root node
+        self.num_nodes = 1 # this is the root node
         self.is_manhattan = is_manhattan
         self.get_input(input_filename, output_filename)
         self.select_next_move(output_filename)
         
     def seen_node(self, new_node):
+        """
+        Parameters:
+            new_node: Node object to check if it has been seen before
+        Return: True or False if the node has been seen before
+        """
         seen = False
         for node in self.reached:
+            # same arrangement and the old node has a lower path cost
             if node == new_node and node < new_node:
                 return True
         return False
 
     def try_moves(self):
+        """
+        Parameters:
+            None
+        Return: None
+        This function will try all possible moves and add them to the frontier if they have not been seen
+        """
         # Try all moves L, R, U, D
         row, col = self.current.make_dict()["0"]
         # print("Current")
@@ -164,20 +181,32 @@ class Puzzle:
                     self.num_nodes += 1
 
     def trace_back(self):
+        """
+        Parameters:
+            None
+        Return: None
+        This function will trace back the path from the goal node to the root node.
+        """
         moves = ""
         f_vals = ""
         curr_node = self.current
         while curr_node.parent != None:
             moves = curr_node.last_move + " " + moves
             f_vals = str(curr_node.fn_value) + " " + f_vals
-            print(curr_node)
+            # print(curr_node)
             curr_node = curr_node.parent
         f_vals = str(curr_node.fn_value) + " " + f_vals
-        print(moves)
-        print(f_vals)
+        # print(moves)
+        # print(f_vals)
         return moves, f_vals
 
     def select_next_move(self, output_filename):
+        """
+        Parameters:
+            output_filename: string representing the name of the output file
+        Return: None
+        This function will select the next move to make based on the heuristic function until a solution is found
+        """
         output_file = open(output_filename, 'a')
         
         self.try_moves() # expand the first node
@@ -198,7 +227,13 @@ class Puzzle:
                 self.try_moves()
 
     def get_input(self, input_filename, output_filename):
-        # This function takes in the file name and populates goal and current states
+        """
+        Parameters:
+            input_filename: string representing the name of the input file
+            output_filename: string representing the name of the output file
+        Return: None
+        This function will read the input file and create the initial and goal nodes
+        """
         try:
             input_file = open(input_filename, 'r')
         except FileNotFoundError:
@@ -225,6 +260,12 @@ class Puzzle:
         output_file.close()
 
 def main():
+    """
+    Parameters:
+        None
+    Return: None
+    This function will run the program with the three input text files
+    """
     Puzzle("Input1.txt", "Output1h1.txt", True)
     Puzzle("Input1.txt", "Output1h2.txt", False)
     
