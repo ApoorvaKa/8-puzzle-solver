@@ -13,6 +13,17 @@ COLS = 3
 
 class Node:
     def __init__(self, arrangement, parent = None, is_manhattan = True, last_move = None, goal_node = None, path_cost = 0):
+        """
+        Parameters:
+            arrangement: 2D list representing the puzzle arrangement
+            parent: Node object representing the parent of this node
+            is_manhattan: boolean representing whether to use manhattan distance or S value
+            last_move: string representing the last move made to get to this node
+            goal_node: Node object representing the goal state of the puzzle
+            path_cost: integer representing the path cost of this node
+        Return: None
+        Function initializes the node with the given parameters
+        """
         self.puzzle = arrangement
         self.path_cost = path_cost
         self.last_move = last_move
@@ -24,13 +35,13 @@ class Node:
                 heuristic = self.manhattan_distance(goal_node) + (3 * self.S_value(goal_node))
             self.fn_value = path_cost + heuristic
     
-    def __str__(self):
-        printer = str(self.last_move) +" " + str(self.fn_value) + "\n"
+    # def __str__(self):
+    #     printer = str(self.last_move) +" " + str(self.fn_value) + "\n"
 
-        for row in self.puzzle:
-            printer += " ".join(row)
-            printer += "\n"
-        return printer
+    #     for row in self.puzzle:
+    #         printer += " ".join(row)
+    #         printer += "\n"
+    #     return printer
     
     def __eq__(self, other = None):
         """
@@ -123,6 +134,14 @@ class Node:
 
 class Puzzle:
     def __init__(self, input_filename, output_filename, is_manhattan):
+        """
+        Parameters:
+            input_filename: name of the input file
+            output_filename: name of the output file
+            is_manhattan: True if manhattan distance is to be used, False if S value is to be used
+        Return: None
+        Function initializes the Puzzle object based on the input file given and heuristic used to
+        """
         self.current = None
         self.goal = None
         self.reached = []
@@ -183,8 +202,10 @@ class Puzzle:
     def trace_back(self):
         """
         Parameters:
-            None
-        Return: None
+            self: Puzzle object
+        Return: 
+            moves: string of moves to get to the goal state
+            f_vals: string of f values for each node
         This function will trace back the path from the goal node to the root node.
         """
         moves = ""
@@ -225,6 +246,7 @@ class Puzzle:
                 output_file.write(f_vals)
             else:
                 self.try_moves()
+        output_file.close()
 
     def get_input(self, input_filename, output_filename):
         """
@@ -264,7 +286,7 @@ def main():
     Parameters:
         None
     Return: None
-    This function will run the program with the three input text files
+    This function will run the program with the three input text files each with two heuristics
     """
     Puzzle("Input1.txt", "Output1h1.txt", True)
     Puzzle("Input1.txt", "Output1h2.txt", False)
