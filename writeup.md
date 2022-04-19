@@ -17,9 +17,9 @@ CS 4613 Project 1
 
 3. Open your shell in the directory with all files.
 
-4. Run the following command in the shell using Python 3. An example is shown below.
+4. Run the following command in the shell using Python 3. (An example is shown below.) Alternatively run the Python file through your preferred IDE.
 
-    `python3 8_puzzle_solver_draft.py`
+    `python3 8_puzzle_solver.py`
 
 5. Files containing the solutions will be generated as follows. Where `#` will be the number of the input passed to the program. The `h1` shows that the *sum of Manhattan distances of the tiles from their goal positions* was used as the heuristic and `h2` shows that *Nilsson's sequence score* was used as the heuristic.
     - Output`#`h1.txt
@@ -28,8 +28,8 @@ CS 4613 Project 1
 
 ## Outputs
 ---
-```
 Output1h1.txt
+```
 4 1 6
 8 3 5
 2 0 7
